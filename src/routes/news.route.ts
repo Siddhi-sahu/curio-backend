@@ -4,7 +4,7 @@ import { db } from "../db/index.js";
 import { userSources, userTopics } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 import { redisClient } from "../lib/redis.js";
-import { fetchPersonalizedFeed } from "../services/news.service.js";
+import { fetchPersonalizedFeed, syncAllFeeds } from "../services/news.service.js";
 
 const newsRouter = Router();
 
@@ -75,6 +75,35 @@ newsRouter.get("/", requireAuth, async (req: any, res) => {
         console.error("News retrieval error:", error);
         res.status(500).json({ error: "Failed to load personalized news feed." });
     }
+});
+
+newsRouter.post("/sync", async (req: any, res) => {
+  const authHeader = req.headers.authorization;
+  const secretQuery = req.query.secret;
+  const cronSecret = process.env.CRON_SECRET || "default_cron_secret";
+  const isDev = process.env.NODE_ENV === "development";
+
+  const isAuthorized =
+    authHeader === `Bearer ${cronSecret}` ||
+    secretQuery === cronSecret ||
+    isDev;
+
+  if (!isAuthorized) {
+    return res.status(401).json({ error: "Unauthorized. Invalid CRON_SECRET token." });
+  }
+
+  try {
+    // Run asynchronously in the background so the HTTP response is instantaneous
+    syncAllFeeds().catch(err => console.error("❌ Background full sync failed:", err));
+    
+    return res.json({
+      message: "Sync successfully triggered in the background.",
+      mode: isDev ? "development (bypass)" : "authenticated"
+    });
+  } catch (error) {
+    console.error("❌ Sync trigger error:", error);
+    res.status(500).json({ error: "Failed to trigger background synchronization." });
+  }
 });
 
 export default newsRouter;

@@ -11,10 +11,13 @@ app.use(cors({
     origin: true,
     credentials: true,
 }));
+
+// Mount Better Auth router BEFORE body-parser middlewares
+app.use("/api/auth", authRouter);
+
 app.use(express.json());
 
-// Mount routers
-app.use("/api/auth", authRouter);
+// Mount other routers
 app.use("/api/preferences", preferencesRouter);
 app.use("/api/news", newsRouter);
 app.use("/api/config", configRouter);

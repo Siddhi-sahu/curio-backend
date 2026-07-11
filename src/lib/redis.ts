@@ -4,12 +4,16 @@ dotenv.config();
 
 const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
+const isSecure = redisUrl.startsWith("rediss://");
+
 export const redisClient = createClient({
   url: redisUrl,
-  socket: {
-    tls: redisUrl.startsWith("rediss://"), // Support secure connection
-    rejectUnauthorized: false
-  }
+  ...(isSecure ? {
+    socket: {
+      tls: true,
+      rejectUnauthorized: false
+    }
+  } : {})
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error", err));
