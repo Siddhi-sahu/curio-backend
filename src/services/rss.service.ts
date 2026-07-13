@@ -1,3 +1,5 @@
+//Uses rss-parser to download and read RSS XML documents, returning article titles, original URLs, and publication dates.
+
 import Parser from "rss-parser";
 
 const parser = new Parser();

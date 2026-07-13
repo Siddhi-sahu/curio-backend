@@ -12,7 +12,7 @@ app.use(cors({
     credentials: true,
 }));
 
-// Mount Better Auth router BEFORE body-parser middlewares
+// Mount Better Auth router BEFORE body-parsing middleware to prevent hanging requests
 app.use("/api/auth", authRouter);
 
 app.use(express.json());
