@@ -133,3 +133,15 @@ For manual API testing, see the detailed Postman testing steps below.
 *   **POST `/api/news/sync`** (Trigger full RSS feed check, scraping, Llama summarization, and cache clearing)
     *   **Query Params**: `?secret=default_cron_secret` (or Authorization header `Bearer default_cron_secret`)
     *   **Response**: Triggers in the background asynchronously so the client HTTP thread doesn't hang.
+
+
+## backend checklist
+
+ ✅ Better Auth Sign-Up/Sign-In + Google OAuth: Integrated through the database schema.
+ ✅ PostgreSQL Database + Drizzle ORM: Implemented schemas for User sessions, onboarding portals catalog, user selections, and summarized articles.
+ ✅ User preferences mapping: Preferences are saved to database matching the user's specific selections.
+ ✅ RSS Parsing: Automatically parses standard feeds using rss-parser.
+ ✅ Mozilla Readability Content Scraper: Mozilla's text extractor to pull body content and meta headers for cover images.
+ ✅ Groq Llama 3.1 Summaries: Configured to run Groq's Llama 3.1 8b in JSON mode, ensuring reliable 2-3 sentence summaries and refined titles.
+ ✅  Redis 12-Hour Caching: Implemented a caching layer for user feeds with a 12-hour TTL.
+ ✅  Real-World Non-Blocking Feed: Replaced slow synchronous scraping with a decoupled DB-read strategy + async background sync worker.

@@ -24,4 +24,13 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     },
   },
+  trustedOrigins: [
+    "http://localhost:8081",
+    "http://localhost:8000",
+    "http://10.0.2.2:8081",
+    "http://10.0.2.2:8000"
+  ],
+  advanced: {
+    disableOriginCheck: true
+  }
 });
